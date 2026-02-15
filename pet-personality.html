@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pet Personality Test 🧠 - PetMatch</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--warm:#FFC857;--warm-light:#FFF3D4;--warm-dark:#E6A800;--white:#FFFFFF;--text:#4A3728;--text-light:#7A6555;--bg:#FFFCF5;--radius:20px;--shadow:0 8px 30px rgba(255,200,87,0.2)}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.lang-bar{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);z-index:100;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--warm-light)}
+.lang-bar .brand{font-weight:700;color:var(--warm-dark);font-size:18px;text-decoration:none}
+.lang-btn{background:none;border:2px solid var(--warm);border-radius:30px;padding:4px 12px;margin-left:6px;cursor:pointer;font-size:13px;color:var(--text);transition:.2s}
+.lang-btn:hover,.lang-btn.active{background:var(--warm);color:#fff}
+.container{max-width:700px;margin:70px auto 40px;padding:20px}
+.header{text-align:center;padding:40px 20px}
+.header h1{font-size:2.5rem;margin-bottom:10px}
+.header .emoji{font-size:4rem;margin:20px 0}
+.pet-select{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:15px;margin:30px 0}
+.pet-btn{background:var(--warm-light);border:3px solid transparent;border-radius:15px;padding:20px;text-align:center;cursor:pointer;transition:.2s;font-size:3rem}
+.pet-btn:hover{border-color:var(--warm);transform:scale(1.05)}
+.pet-btn.selected{background:var(--warm);border-color:var(--warm-dark)}
+.pet-btn .label{font-size:0.8rem;margin-top:5px;display:block}
+.progress-bar{background:var(--warm-light);height:8px;border-radius:10px;margin:20px 0;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,var(--warm),var(--warm-dark));height:100%;width:0;transition:.3s}
+.question-card{background:var(--white);border-radius:var(--radius);padding:40px 30px;box-shadow:var(--shadow);margin:20px 0;display:none}
+.question-card.active{display:block;animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.question-card h2{font-size:1.5rem;margin-bottom:20px}
+.scale{display:flex;gap:8px;margin:20px 0}
+.scale-btn{flex:1;background:var(--warm-light);border:2px solid transparent;border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:.2s}
+.scale-btn:hover{border-color:var(--warm)}
+.scale-btn.selected{background:var(--warm);color:#fff;border-color:var(--warm-dark)}
+.btn-next{width:100%;background:var(--warm);color:#fff;border:none;border-radius:30px;padding:16px;font-size:1.1rem;font-weight:600;cursor:pointer;margin-top:20px;transition:.2s}
+.btn-next:hover:not(:disabled){background:var(--warm-dark)}
+.btn-next:disabled{opacity:0.5;cursor:not-allowed}
+.result{display:none;text-align:center;padding:40px 20px}
+.result.active{display:block}
+.result .pet-emoji{font-size:5rem;margin:20px 0}
+.result h2{font-size:2.2rem;margin-bottom:15px;color:var(--warm-dark)}
+.result .mbti{font-size:2rem;font-weight:700;background:var(--warm-light);padding:15px;border-radius:15px;margin:20px 0}
+.result .traits{background:var(--warm-light);border-radius:15px;padding:20px;margin:20px 0;text-align:left}
+.result .traits h3{margin-bottom:12px;color:var(--warm-dark)}
+.btn{background:var(--warm);color:#fff;border:none;border-radius:30px;padding:12px 28px;font-size:1rem;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block;margin-top:10px}
+.btn:hover{background:var(--warm-dark)}
+[data-lang]{display:none}
+[data-lang].active{display:block}
+</style>
+</head>
+<body>
+<nav class="lang-bar">
+<a href="index.html" class="brand">PetMatch 🐾</a>
+<div>
+<button class="lang-btn active" onclick="setLang('en')">EN</button>
+<button class="lang-btn" onclick="setLang('zh')">中文</button>
+<button class="lang-btn" onclick="setLang('ja')">日本語</button>
+</div>
+</nav>
+
+<div class="container">
+<div class="header">
+<div class="emoji">🧠✨</div>
+<h1>
+<span data-lang="en" class="active">Pet Personality Test</span>
+<span data-lang="zh">宠物性格测试</span>
+<span data-lang="ja">ペット性格テスト</span>
+</h1>
+<p style="color:var(--text-light)">
+<span data-lang="en" class="active">What's your pet's MBTI?</span>
+<span data-lang="zh">你的宠物是什么MBTI？</span>
+<span data-lang="ja">ペットのMBTIは？</span>
+</p>
+</div>
+
+<div id="pet-select-section">
+<h2 style="text-align:center;margin:20px 0">
+<span data-lang="en" class="active">Choose your pet type:</span>
+<span data-lang="zh">选择你的宠物类型：</span>
+<span data-lang="ja">ペットの種類を選択：</span>
+</h2>
+<div class="pet-select">
+<button class="pet-btn" onclick="selectPetType('dog')"><span>🐶</span><span class="label"><span data-lang="en" class="active">Dog</span><span data-lang="zh">狗</span><span data-lang="ja">犬</span></span></button>
+<button class="pet-btn" onclick="selectPetType('cat')"><span>🐱</span><span class="label"><span data-lang="en" class="active">Cat</span><span data-lang="zh">猫</span><span data-lang="ja">猫</span></span></button>
+<button class="pet-btn" onclick="selectPetType('hamster')"><span>🐹</span><span class="label"><span data-lang="en" class="active">Hamster</span><span data-lang="zh">仓鼠</span><span data-lang="ja">ハムスター</span></span></button>
+<button class="pet-btn" onclick="selectPetType('rabbit')"><span>🐰</span><span class="label"><span data-lang="en" class="active">Rabbit</span><span data-lang="zh">兔子</span><span data-lang="ja">ウサギ</span></span></button>
+<button class="pet-btn" onclick="selectPetType('fish')"><span>🐠</span><span class="label"><span data-lang="en" class="active">Fish</span><span data-lang="zh">鱼</span><span data-lang="ja">魚</span></span></button>
+<button class="pet-btn" onclick="selectPetType('bird')"><span>🐦</span><span class="label"><span data-lang="en" class="active">Bird</span><span data-lang="zh">鸟</span><span data-lang="ja">鳥</span></span></button>
+</div>
+</div>
+
+<div style="text-align:center;color:var(--text-light);margin-top:20px"><span id="progress">0/10</span></div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+<div id="quiz-container"></div>
+<div id="result" class="result"></div>
+</div>
+
+<script>
+let currentLang='en';
+let selectedPetType='';
+let currentQ=0;
+let scores={E:0,I:0,S:0,N:0,T:0,F:0,J:0,P:0};
+
+const questions=[
+{en:"Is your pet extroverted or introverted?",zh:"你的宠物是外向还是内向？",ja:"ペットは外向的？内向的？",
+opts:[{en:"Loves socializing",zh:"喜欢社交",ja:"社交好き",val:'E'},{en:"Prefers solitude",zh:"喜欢独处",ja:"1人が好き",val:'I'}]},
+{en:"Does your pet focus on details or big picture?",zh:"宠物注重细节还是大局？",ja:"詳細か全体か？",
+opts:[{en:"Detail-oriented",zh:"注重细节",ja:"細部注視",val:'S'},{en:"Sees the big picture",zh:"看大局",ja:"全体を見る",val:'N'}]},
+{en:"How does your pet make decisions?",zh:"宠物如何做决定？",ja:"決定はどう？",
+opts:[{en:"Logic & reason",zh:"逻辑理性",ja:"論理的",val:'T'},{en:"Feelings & emotions",zh:"感受情感",ja:"感情的",val:'F'}]},
+{en:"Is your pet structured or spontaneous?",zh:"宠物是有条理还是随性？",ja:"構造的？自発的？",
+opts:[{en:"Organized & planned",zh:"有组织有计划",ja:"整理整頓",val:'J'},{en:"Flexible & spontaneous",zh:"灵活随性",ja:"柔軟で自発的",val:'P'}]},
+{en:"Energy level?",zh:"能量级别？",ja:"エネルギーレベル？",
+opts:[{en:"High energy",zh:"高能量",ja:"高エネルギー",val:'E'},{en:"Low-key",zh:"低调",ja:"控えめ",val:'I'}]},
+{en:"Does your pet enjoy routine?",zh:"宠物享受例行程序？",ja:"日常を楽しむ？",
+opts:[{en:"Loves routine",zh:"喜欢日常",ja:"日常が好き",val:'J'},{en:"Hates routine",zh:"讨厌日常",ja:"嫌い",val:'P'}]},
+{en:"How does your pet express affection?",zh:"宠物如何表达喜欢？",ja:"愛情表現は？",
+opts:[{en:"Openly & enthusiastically",zh:"公开热情",ja:"積極的に",val:'F'},{en:"Subtly & reserved",zh:"微妙保留",ja:"控えめに",val:'T'}]},
+{en:"Does your pet focus on facts or possibilities?",zh:"宠物关注事实还是可能性？",ja:"事実か可能性か？",
+opts:[{en:"Facts & present",zh:"事实和现在",ja:"事実",val:'S'},{en:"Possibilities & future",zh:"可能性和未来",ja:"可能性",val:'N'}]},
+{en:"What's your pet's risk appetite?",zh:"宠物的冒险欲望？",ja:"冒険心は？",
+opts:[{en:"Cautious",zh:"谨慎",ja:"慎重",val:'J'},{en:"Adventurous",zh:"冒险",ja:"冒険好き",val:'P'}]},
+{en:"How many friends does your pet need?",zh:"宠物需要多少朋友？",ja:"友達は何人必要？",
+opts:[{en:"Many friends",zh:"很多朋友",ja:"大勢の友達",val:'E'},{en:"Few close friends",zh:"少数亲密朋友",ja:"少数派",val:'I'}]}
+];
+
+const personalities={
+ENFP:{en:"ENFP - The Enthusiast",zh:"ENFP - 热情家",ja:"ENFP - 熱心家",desc_en:"Your pet is a cheerful, spontaneous ball of energy! Always up for adventures, easily excited, and loves making new friends.",desc_zh:"你的宠物是快乐、自发的能量球！总是准备好冒险、容易兴奋、热爱交新朋友。",desc_ja:"ペットは陽気で自発的なエネルギーボール！冒険の準備ができて、興奮しやすく、新しい友達が好き。"},
+ENFJ:{en:"ENFJ - The Leader",zh:"ENFJ - 领导者",ja:"ENFJ - リーダー",desc_en:"Your pet is a natural leader with charisma! Loves social interactions and bringing harmony to the group.",desc_zh:"你的宠物是有魅力的天生领导者！喜欢社交互动并给群体带来和谐。",desc_ja:"ペットはカリスマ性のあるリーダー！社交的で調和を保つのが好き。"},
+ENTP:{en:"ENTP - The Debater",zh:"ENTP - 辩手",ja:"ENTP - 議論好き",desc_en:"Your pet is clever, curious, and loves testing boundaries! Quick-witted and always thinking.",desc_zh:"你的宠物聪明好奇，喜欢测试界限！反应敏捷，总是在思考。",desc_ja:"ペットは賢くて好奇心が強く、限界を試すのが好き！機知に富んで常に思考。"},
+ENTJ:{en:"ENTJ - The Commander",zh:"ENTJ - 指挥官",ja:"ENTJ - 指揮官",desc_en:"Your pet is decisive and goal-oriented! A natural strategist who takes charge and makes things happen.",desc_zh:"你的宠物果断且目标导向！天生的战略家，掌控局面并让事情发生。",desc_ja:"ペットは決断力があり目標指向！戦略家で主導権を握るタイプ。"},
+INFP:{en:"INFP - The Mediator",zh:"INFP - 调解人",ja:"INFP - 調停者",desc_en:"Your pet is thoughtful, creative, and values harmony. Sensitive but deeply caring toward loved ones.",desc_zh:"你的宠物思想深邃、有创意且重视和谐。敏感但对所爱的人深情关怀。",desc_ja:"ペットは思慮深く創造的で調和を大切にする。敏感だが心から優しい。"},
+INFJ:{en:"INFJ - The Advocate",zh:"INFJ - 倡导者",ja:"INFJ - 支援者",desc_en:"Your pet is insightful and compassionate, with strong intuition. A rare and special personality type!",desc_zh:"你的宠物富有洞察力和同情心，直觉很强。一个罕见特殊的性格类型！",desc_ja:"ペットは洞察力があり思いやり深く、直感が強い。稀で特別なタイプ！"},
+INTP:{en:"INTP - The Logician",zh:"INTP - 逻辑学家",ja:"INTP - 論理学者",desc_en:"Your pet is analytical and loves solving puzzles. Independent thinker who observes everything.",desc_zh:"你的宠物分析能力强，喜欢解谜。独立思考者，观察一切。",desc_ja:"ペットは分析的でパズル好き。観察眼の鋭い独立思考者。"},
+INTJ:{en:"INTJ - The Architect",zh:"INTJ - 建筑师",ja:"INTJ - 建築家",desc_en:"Your pet is strategic and independent. Mysterious but brilliant, with a clear vision of the future.",desc_zh:"你的宠物战略性强且独立。神秘但聪慧，对未来有明确的愿景。",desc_ja:"ペットは戦略的で独立。神秘的だが賢く、未来への明確な見方がある。"},
+ESFP:{en:"ESFP - The Entertainer",zh:"ESFP - 表演者",ja:"ESFP - エンターテイナー",desc_en:"Your pet is the life of the party! Loves attention, fun activities, and living in the moment.",desc_zh:"你的宠物是聚会的焦点！喜欢关注、好玩活动和活在当下。",desc_ja:"ペットはパーティーの中心人物！注目を浴びて、楽しく、今を生きるのが好き。"},
+ESFJ:{en:"ESFJ - The Consul",zh:"ESFJ - 执政官",ja:"ESFJ - 領事",desc_en:"Your pet is loyal, caring, and loves helping others. The family's emotional support and protector.",desc_zh:"你的宠物忠诚、关心他人、乐于帮助。家庭的情感支持和保护者。",desc_ja:"ペットは忠実で思いやり深く、人を助けるのが好き。家族の心理的支援者。"},
+ESTP:{en:"ESTP - The Entrepreneur",zh:"ESTP - 企业家",ja:"ESTP - 起業家",desc_en:"Your pet is bold and action-oriented! Lives for excitement and isn't afraid of taking risks.",desc_zh:"你的宠物大胆且行动导向！为刺激而活，不怕冒险。",desc_ja:"ペットは大胆で行動指向！興奮のために生き、リスクを怖れない。"},
+ESTJ:{en:"ESTJ - The Logistician",zh:"ESTJ - 物流师",ja:"ESTJ - 物流家",desc_en:"Your pet is practical and responsible. Believes in hard work, discipline, and following rules.",desc_zh:"你的宠物实用且负责任。相信勤奋、纪律和遵守规则。",desc_ja:"ペットは実際的で責任感が強い。勤勉さ、規律、ルール遵守を信じる。"}
+};
+
+function setLang(lang){
+currentLang=lang;
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+document.querySelectorAll('[data-lang]').forEach(el=>el.classList.toggle('active',el.dataset.lang===lang));
+}
+
+function selectPetType(type){
+selectedPetType=type;
+document.querySelectorAll('.pet-btn').forEach(b=>b.classList.remove('selected'));
+event.target.closest('.pet-btn').classList.add('selected');
+setTimeout(()=>{
+document.getElementById('pet-select-section').style.display='none';
+showQuestion(0);
+},300);
+}
+
+function showQuestion(n){
+const q=questions[n];
+const html=`<div class="question-card active">
+<h2><span data-lang="en" class="active">${q.en}</span><span data-lang="zh">${q.zh}</span><span data-lang="ja">${q.ja}</span></h2>
+<div class="scale">${q.opts.map((o,i)=>`<button class="scale-btn" onclick="selectAnswer('${o.val}')" data-val="${o.val}">
+<span data-lang="en" class="active">${o.en}</span><span data-lang="zh">${o.zh}</span><span data-lang="ja">${o.ja}</span>
+</button>`).join('')}</div>
+<button class="btn-next" disabled id="nextBtn" onclick="nextQuestion()">
+<span data-lang="en" class="active">Next →</span><span data-lang="zh">下一题 →</span><span data-lang="ja">次へ →</span>
+</button>
+</div>`;
+document.getElementById('quiz-container').innerHTML=html;
+document.getElementById('progress').textContent=`${n+1}/10`;
+document.getElementById('progress-fill').style.width=`${((n+1)/10)*100}%`;
+restoreLang();
+}
+
+function selectAnswer(val){
+document.querySelectorAll('.scale-btn').forEach(b=>b.classList.remove('selected'));
+event.target.classList.add('selected');
+document.getElementById('nextBtn').disabled=false;
+scores[val]++;
+}
+
+function nextQuestion(){
+currentQ++;
+if(currentQ<10){showQuestion(currentQ);}else{showResult();}
+}
+
+function showResult(){
+let mbti='';
+const keys=['E','I'];
+mbti+=scores['E']>scores['I']?'E':'I';
+mbti+=scores['S']>scores['N']?'S':'N';
+mbti+=scores['T']>scores['F']?'T':'F';
+mbti+=scores['J']>scores['P']?'J':'P';
+
+const p=personalities[mbti];
+const desc=currentLang==='en'?p.desc_en:currentLang==='zh'?p.desc_zh:p.desc_ja;
+const name=currentLang==='en'?p.en:currentLang==='zh'?p.zh:p.ja;
+const petEmojis={dog:'🐶',cat:'🐱',hamster:'🐹',rabbit:'🐰',fish:'🐠',bird:'🐦'};
+const html=`<div class="result active">
+<div class="pet-emoji">${petEmojis[selectedPetType]}</div>
+<h2>${name}</h2>
+<div class="mbti">${mbti}</div>
+<p style="font-size:1.1rem;margin:20px 0">${desc}</p>
+<a href="spirit-animal.html" class="btn"><span data-lang="en" class="active">Discover Spirit Animal →</span><span data-lang="zh">发现灵魂动物 →</span><span data-lang="ja">スピリットアニマル発見 →</span></a>
+<a href="index.html" class="btn" style="background:#fff;color:var(--text);border:2px solid var(--warm)"><span data-lang="en" class="active">Back Home</span><span data-lang="zh">返回首页</span><span data-lang="ja">ホームに戻る</span></a>
+</div>`;
+document.getElementById('quiz-container').innerHTML='';
+document.getElementById('result').innerHTML=html;
+document.getElementById('result').classList.add('active');
+restoreLang();
+}
+
+function restoreLang(){
+document.querySelectorAll('[data-lang]').forEach(el=>el.classList.toggle('active',el.dataset.lang===currentLang));
+}
+</script>
+</body>
+</html>

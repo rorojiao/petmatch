@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetMatch 🐾 - Fun Pet Personality Tests</title>
+<meta name="description" content="Discover your perfect pet, your pet's personality, and your spirit animal with fun quizzes! 🐱🐶🐹">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--warm:#FFC857;--warm-light:#FFF3D4;--warm-dark:#E6A800;--white:#FFFFFF;--text:#4A3728;--text-light:#7A6555;--bg:#FFFCF5;--radius:20px;--shadow:0 8px 30px rgba(255,200,87,0.2)}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+.lang-bar{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);z-index:100;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--warm-light);font-size:14px}
+.lang-bar .brand{font-weight:700;color:var(--warm-dark);font-size:18px}
+.lang-btn{background:none;border:2px solid var(--warm);border-radius:30px;padding:4px 12px;margin-left:6px;cursor:pointer;font-size:13px;color:var(--text);transition:.2s}
+.lang-btn:hover,.lang-btn.active{background:var(--warm);color:#fff}
+.hero{margin-top:50px;text-align:center;padding:80px 20px 60px;background:linear-gradient(180deg,var(--warm-light) 0%,var(--bg) 100%)}
+.hero h1{font-size:clamp(2.5rem,6vw,4rem);margin-bottom:10px}
+.hero .subtitle{font-size:clamp(1.1rem,3vw,1.4rem);color:var(--text-light);max-width:600px;margin:0 auto 40px}
+.pets-float{font-size:clamp(3rem,8vw,5rem);margin:20px 0 30px;animation:bounce 3s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;max-width:1000px;margin:0 auto;padding:20px 20px 80px}
+.card{background:var(--white);border-radius:var(--radius);padding:40px 30px;text-align:center;box-shadow:var(--shadow);transition:.3s;cursor:pointer;text-decoration:none;color:var(--text);border:3px solid transparent;position:relative;overflow:hidden}
+.card:hover{transform:translateY(-8px);border-color:var(--warm);box-shadow:0 12px 40px rgba(255,200,87,0.35)}
+.card-emoji{font-size:4rem;margin-bottom:16px;display:block}
+.card h2{font-size:1.4rem;margin-bottom:10px;color:var(--text)}
+.card p{color:var(--text-light);font-size:0.95rem;line-height:1.5}
+.card .arrow{display:inline-block;margin-top:16px;background:var(--warm);color:#fff;border-radius:30px;padding:8px 24px;font-weight:600;font-size:0.9rem;transition:.2s}
+.card:hover .arrow{background:var(--warm-dark)}
+footer{text-align:center;padding:40px 20px;background:var(--warm-light);color:var(--text-light);font-size:0.85rem}
+footer a{color:var(--warm-dark);text-decoration:none}
+.tip-btn{display:inline-block;margin-top:12px;background:var(--warm);color:#fff;border:none;border-radius:30px;padding:10px 24px;font-size:0.9rem;cursor:pointer;transition:.2s}
+.tip-btn:hover{background:var(--warm-dark)}
+.tip-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:200;justify-content:center;align-items:center}
+.tip-modal.show{display:flex}
+.tip-box{background:#fff;border-radius:var(--radius);padding:30px;max-width:400px;text-align:center}
+.tip-box code{display:block;background:var(--warm-light);padding:10px;border-radius:10px;font-size:0.7rem;word-break:break-all;margin:12px 0}
+[data-lang]{display:none}
+[data-lang].active{display:block}
+.inline-lang{display:none}
+.inline-lang.active{display:inline}
+</style>
+</head>
+<body>
+<nav class="lang-bar">
+<span class="brand">PetMatch 🐾</span>
+<div>
+<button class="lang-btn active" onclick="setLang('en')">EN</button>
+<button class="lang-btn" onclick="setLang('zh')">中文</button>
+<button class="lang-btn" onclick="setLang('ja')">日本語</button>
+</div>
+</nav>
+
+<section class="hero">
+<div class="pets-float">🐱 🐶 🐹 🐰 🐟 🐦</div>
+<h1>
+<span data-lang="en" class="active">PetMatch 🐾</span>
+<span data-lang="zh">PetMatch 宠物配对 🐾</span>
+<span data-lang="ja">PetMatch ペットマッチ 🐾</span>
+</h1>
+<p class="subtitle">
+<span data-lang="en" class="active">Discover your perfect pet match, unlock your pet's personality, and find your spirit animal! 🌟</span>
+<span data-lang="zh" class="active">发现你的完美宠物、解锁你家宠物的性格、找到你的灵魂动物！🌟</span>
+<span data-lang="ja" class="active">あなたにぴったりのペット、ペットの性格、スピリットアニマルを見つけよう！🌟</span>
+</p>
+</section>
+
+<section class="cards">
+<a class="card" href="which-pet.html">
+<span class="card-emoji">🏠🐾</span>
+<h2>
+<span data-lang="en" class="active">Which Pet Suits You?</span>
+<span data-lang="zh">你适合养什么宠物？</span>
+<span data-lang="ja">あなたに合うペットは？</span>
+</h2>
+<p>
+<span data-lang="en" class="active">Answer 15 lifestyle questions and we'll match you with your perfect pet companion! 🎯</span>
+<span data-lang="zh">回答15道生活习惯题，我们帮你找到最适合的宠物伙伴！🎯</span>
+<span data-lang="ja">15の生活習慣の質問に答えて、ぴったりのペットを見つけよう！🎯</span>
+</p>
+<span class="arrow">
+<span data-lang="en" class="active">Start Quiz →</span>
+<span data-lang="zh">开始测试 →</span>
+<span data-lang="ja">テスト開始 →</span>
+</span>
+</a>
+
+<a class="card" href="pet-personality.html">
+<span class="card-emoji">🧠✨</span>
+<h2>
+<span data-lang="en" class="active">Pet Personality Test</span>
+<span data-lang="zh">宠物性格测试</span>
+<span data-lang="ja">ペット性格テスト</span>
+</h2>
+<p>
+<span data-lang="en" class="active">What's your pet's MBTI? Select your pet type and discover their unique personality! 🔮</span>
+<span data-lang="zh">你的宠物是什么MBTI？选择宠物种类，发现它的独特性格！🔮</span>
+<span data-lang="ja">ペットのMBTIは？ペットの種類を選んで、ユニークな性格を発見！🔮</span>
+</p>
+<span class="arrow">
+<span data-lang="en" class="active">Analyze Now →</span>
+<span data-lang="zh">开始分析 →</span>
+<span data-lang="ja">分析開始 →</span>
+</span>
+</a>
+
+<a class="card" href="spirit-animal.html">
+<span class="card-emoji">🦊🌙</span>
+<h2>
+<span data-lang="en" class="active">Your Spirit Animal</span>
+<span data-lang="zh">你的灵魂动物</span>
+<span data-lang="ja">あなたのスピリットアニマル</span>
+</h2>
+<p>
+<span data-lang="en" class="active">Answer 15 personality questions and discover which animal shares your soul! 🌈</span>
+<span data-lang="zh">回答15道性格题，发现哪种动物与你灵魂相通！🌈</span>
+<span data-lang="ja">15の性格質問に答えて、あなたの魂を共有する動物を発見！🌈</span>
+</p>
+<span class="arrow">
+<span data-lang="en" class="active">Find Out →</span>
+<span data-lang="zh">去发现 →</span>
+<span data-lang="ja">発見する →</span>
+</span>
+</a>
+</section>
+
+<footer>
+<p>Made with 💛 by PetMatch Team</p>
+<p style="margin-top:8px">
+<button class="tip-btn" onclick="document.getElementById('tipModal').classList.add('show')">
+<span data-lang="en" class="active">☕ Buy us a treat</span>
+<span data-lang="zh">☕ 请我们喝杯奶茶</span>
+<span data-lang="ja">☕ おやつを奢る</span>
+</button>
+</p>
+<div style="margin-top:12px">© 2026 PetMatch 🐾</div>
+</footer>
+
+<div class="tip-modal" id="tipModal" onclick="this.classList.remove('show')">
+<div class="tip-box" onclick="event.stopPropagation()">
+<p style="font-size:2rem">🐾💛</p>
+<p><strong>
+<span data-lang="en" class="active">Thanks for your support!</span>
+<span data-lang="zh">感谢你的支持！</span>
+<span data-lang="ja">応援ありがとう！</span>
+</strong></p>
+<p style="font-size:0.9rem;color:var(--text-light)">ETH / USDT (ERC-20)</p>
+<code>0xEeD903787Cb86bcCc17777E5C7d10A4c2De43823</code>
+<button class="tip-btn" onclick="navigator.clipboard.writeText('0xEeD903787Cb86bcCc17777E5C7d10A4c2De43823');this.textContent='✅ Copied!'">📋 Copy Address</button>
+<br><br>
+<button style="background:none;border:none;cursor:pointer;color:var(--text-light)" onclick="document.getElementById('tipModal').classList.remove('show')">Close ✕</button>
+</div>
+</div>
+
+<script>
+let currentLang='en';
+function setLang(lang){
+currentLang=lang;
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+document.querySelectorAll('[data-lang]').forEach(el=>{
+el.classList.toggle('active',el.dataset.lang===lang);
+});
+localStorage.setItem('petmatch-lang',lang);
+}
+const saved=localStorage.getItem('petmatch-lang');
+if(saved)setLang(saved);
+</script>
+</body>
+</html>

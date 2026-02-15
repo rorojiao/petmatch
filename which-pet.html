@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Pet Suits You? 🏠 - PetMatch</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐾</text></svg>">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--warm:#FFC857;--warm-light:#FFF3D4;--warm-dark:#E6A800;--white:#FFFFFF;--text:#4A3728;--text-light:#7A6555;--bg:#FFFCF5;--radius:20px;--shadow:0 8px 30px rgba(255,200,87,0.2)}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.lang-bar{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,0.95);backdrop-filter:blur(10px);z-index:100;padding:8px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--warm-light)}
+.lang-bar .brand{font-weight:700;color:var(--warm-dark);font-size:18px;text-decoration:none}
+.lang-btn{background:none;border:2px solid var(--warm);border-radius:30px;padding:4px 12px;margin-left:6px;cursor:pointer;font-size:13px;color:var(--text);transition:.2s}
+.lang-btn:hover,.lang-btn.active{background:var(--warm);color:#fff}
+.container{max-width:700px;margin:70px auto 40px;padding:20px}
+.quiz-header{text-align:center;padding:40px 20px}
+.quiz-header h1{font-size:2.5rem;margin-bottom:10px}
+.quiz-header .emoji{font-size:4rem;margin:20px 0}
+.progress-bar{background:var(--warm-light);height:8px;border-radius:10px;margin:20px 0;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,var(--warm),var(--warm-dark));height:100%;width:0;transition:.3s}
+.question-card{background:var(--white);border-radius:var(--radius);padding:40px 30px;box-shadow:var(--shadow);margin:20px 0;display:none;animation:slideIn .3s ease}
+.question-card.active{display:block}
+@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.question-card h2{font-size:1.5rem;margin-bottom:20px}
+.options{display:grid;gap:12px}
+.option{background:var(--warm-light);border:3px solid transparent;border-radius:15px;padding:16px 20px;cursor:pointer;transition:.2s;text-align:center}
+.option:hover{border-color:var(--warm);transform:scale(1.02)}
+.option.selected{background:var(--warm);color:#fff;border-color:var(--warm-dark)}
+.btn-next{width:100%;background:var(--warm);color:#fff;border:none;border-radius:30px;padding:16px;font-size:1.1rem;font-weight:600;cursor:pointer;margin-top:20px;transition:.2s}
+.btn-next:hover:not(:disabled){background:var(--warm-dark)}
+.btn-next:disabled{opacity:0.5;cursor:not-allowed}
+.result{display:none;text-align:center;padding:40px 20px}
+.result.active{display:block;animation:slideIn .5s ease}
+.result .pet-emoji{font-size:6rem;margin:20px 0}
+.result h2{font-size:2.2rem;margin-bottom:15px;color:var(--warm-dark)}
+.result .desc{font-size:1.1rem;line-height:1.8;margin:20px 0}
+.result .traits{background:var(--warm-light);border-radius:15px;padding:20px;margin:20px 0;text-align:left}
+.result .traits h3{margin-bottom:12px;color:var(--warm-dark)}
+.result .traits li{margin:8px 0}
+.btn{background:var(--warm);color:#fff;border:none;border-radius:30px;padding:12px 28px;font-size:1rem;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block;margin-top:10px}
+.btn:hover{background:var(--warm-dark)}
+[data-lang]{display:none}
+[data-lang].active{display:block}
+</style>
+</head>
+<body>
+<nav class="lang-bar">
+<a href="index.html" class="brand">PetMatch 🐾</a>
+<div>
+<button class="lang-btn active" onclick="setLang('en')">EN</button>
+<button class="lang-btn" onclick="setLang('zh')">中文</button>
+<button class="lang-btn" onclick="setLang('ja')">日本語</button>
+</div>
+</nav>
+
+<div class="container">
+<div class="quiz-header">
+<div class="emoji">🏠🐾</div>
+<h1>
+<span data-lang="en" class="active">Which Pet Suits You?</span>
+<span data-lang="zh">你适合养什么宠物？</span>
+<span data-lang="ja">あなたに合うペットは？</span>
+</h1>
+</div>
+
+<div style="text-align:center;color:var(--text-light)"><span id="progress">1/15</span></div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+<div id="quiz-container"></div>
+<div id="result" class="result"></div>
+</div>
+
+<script>
+let currentLang='en';
+let currentQ=0;
+let scores={dog:0,cat:0,hamster:0,rabbit:0,fish:0,bird:0};
+
+const questions=[
+{en:"How much free time daily?",zh:"每天有多少空闲时间？",ja:"毎日どのくらい自由な時間？",
+opts:[{en:"<1 hour",zh:"<1小时",ja:"<1時間",score:{fish:3,cat:2}},{en:"1-2 hours",zh:"1-2小时",ja:"1-2時間",score:{cat:3,hamster:2}},{en:"2-4 hours",zh:"2-4小时",ja:"2-4時間",score:{dog:2,cat:2}},{en:"4+ hours",zh:"4+小时",ja:"4時間以上",score:{dog:3}}]},
+{en:"Living space?",zh:"居住空间？",ja:"住みやすさ？",
+opts:[{en:"Small apt",zh:"小公寓",ja:"小さなアパート",score:{cat:3,fish:3}},{en:"Medium apt",zh:"中公寓",ja:"普通のアパート",score:{cat:2,bird:2}},{en:"Large apt",zh:"大公寓",ja:"広いアパート",score:{dog:2}},{en:"House+yard",zh:"房子+院子",ja:"庭付き家",score:{dog:3,rabbit:2}}]},
+{en:"Weekend activity?",zh:"周末活动？",ja:"週末の過ごし方？",
+opts:[{en:"Outdoor adventure",zh:"户外探险",ja:"アウトドア",score:{dog:3}},{en:"Home relax",zh:"在家放松",ja:"家でリラックス",score:{cat:3,fish:2}},{en:"Social time",zh:"社交聚会",ja:"友達と",score:{dog:2,bird:2}},{en:"Quiet hobbies",zh:"安静爱好",ja:"静かな趣味",score:{cat:2,hamster:2,fish:2}}]},
+{en:"Noise tolerance?",zh:"噪音容忍度？",ja:"騒音耐性？",
+opts:[{en:"Love it! 🔊",zh:"喜欢！🔊",ja:"好き！🔊",score:{dog:3,bird:3}},{en:"Some noise ok",zh:"可以接受",ja:"少しはいい",score:{dog:2,bird:2}},{en:"Prefer quiet",zh:"喜欢安静",ja:"静かが好き",score:{cat:2,hamster:2,rabbit:2}},{en:"Need silence",zh:"需要安静",ja:"沈黙が必要",score:{fish:3}}]},
+{en:"Pet budget/month?",zh:"每月宠物预算？",ja:"月のペット予算？",
+opts:[{en:"<$50",zh:"<$50",ja:"<$50",score:{fish:3,hamster:3}},{en:"$50-100",zh:"$50-100",ja:"$50-100",score:{cat:2,rabbit:2}},{en:"$100-200",zh:"$100-200",ja:"$100-200",score:{dog:3}},{en:">$200",zh:">$200",ja:">$200",score:{dog:2}}]},
+{en:"Cleaning frequency?",zh:"清洁频率？",ja:"清掃頻度？",
+opts:[{en:"Rarely",zh:"很少",ja:"あまり",score:{fish:3}},{en:"Weekly",zh:"每周",ja:"週1回",score:{cat:2,hamster:2}},{en:"2-3x/week",zh:"每周2-3次",ja:"週2-3回",score:{cat:2,rabbit:2,bird:2}},{en:"Daily",zh:"每天",ja:"毎日",score:{dog:2}}]},
+{en:"Your exercise routine?",zh:"运动习惯？",ja:"運動習慣？",
+opts:[{en:"Couch potato",zh:"沙发土豆",ja:"ソファ派",score:{fish:3,cat:2}},{en:"Light walks",zh:"轻度散步",ja:"軽い散歩",score:{cat:2,hamster:2}},{en:"Regular",zh:"定期运动",ja:"定期的",score:{dog:2,rabbit:2}},{en:"Very active!",zh:"非常活跃！",ja:"とても活発！",score:{dog:3}}]},
+{en:"Travel frequency?",zh:"旅行频率？",ja:"旅行頻度？",
+opts:[{en:"Rarely",zh:"很少",ja:"あまり",score:{dog:2,cat:2,rabbit:2}},{en:"Few/year",zh:"一年几次",ja:"年に数回",score:{cat:3,hamster:2,fish:2}},{en:"Monthly",zh:"每月",ja:"毎月",score:{fish:3}},{en:"Very often",zh:"非常频繁",ja:"とても頻繁",score:{fish:3}}]},
+{en:"Interaction level?",zh:"互动程度？",ja:"交流レベル？",
+opts:[{en:"Just observe",zh:"只观察",ja:"観察のみ",score:{fish:3}},{en:"Minimal",zh:"最小",ja:"最小限",score:{fish:2,hamster:2}},{en:"Moderate",zh:"适度",ja:"普通",score:{cat:3,rabbit:2,bird:2}},{en:"Constant companion",zh:"持续陪伴",ja:"常に一緒",score:{dog:3}}]},
+{en:"Allergies?",zh:"过敏？",ja:"アレルギー？",
+opts:[{en:"Fur allergies",zh:"毛发过敏",ja:"毛のアレルギー",score:{fish:3,bird:2}},{en:"Slightly sensitive",zh:"轻微敏感",ja:"少し敏感",score:{fish:2,hamster:2}},{en:"None",zh:"没有",ja:"なし",score:{dog:2,cat:2,rabbit:2}},{en:"Love fluffy!",zh:"爱毛绒！",ja:"フワフワ好き！",score:{dog:3,cat:3,rabbit:3}}]},
+{en:"Work schedule?",zh:"工作时间？",ja:"仕事スケジュール？",
+opts:[{en:"Work from home",zh:"在家工作",ja:"在宅勤務",score:{dog:2,cat:2}},{en:"9-5 office",zh:"朝九晚五",ja:"9-5勤務",score:{cat:3,fish:2}},{en:"Irregular",zh:"不规律",ja:"不規則",score:{cat:2,fish:2}},{en:"Night shifts",zh:"夜班",ja:"夜勤",score:{cat:3}}]},
+{en:"Pet experience?",zh:"养宠经验？",ja:"ペット経験？",
+opts:[{en:"Total beginner",zh:"完全新手",ja:"初めて",score:{fish:3,hamster:2}},{en:"Some",zh:"有一些",ja:"少し",score:{cat:2,hamster:2}},{en:"Experienced",zh:"相当有经验",ja:"かなり",score:{dog:2,cat:2,rabbit:2}},{en:"Expert",zh:"专家",ja:"エキスパート",score:{dog:2,rabbit:2,bird:2}}]},
+{en:"Patience level?",zh:"耐心程度？",ja:"忍耐力？",
+opts:[{en:"Low",zh:"低",ja:"低い",score:{fish:3,cat:2}},{en:"Moderate",zh:"中等",ja:"普通",score:{cat:2,hamster:2}},{en:"Patient",zh:"有耐心",ja:"忍耐強い",score:{dog:2,rabbit:2}},{en:"Very patient",zh:"极有耐心",ja:"とても",score:{dog:3}}]},
+{en:"Training interest?",zh:"训练兴趣？",ja:"トレーニング興味？",
+opts:[{en:"No interest",zh:"没兴趣",ja:"興味なし",score:{fish:3}},{en:"Basic tricks",zh:"基础技能",ja:"基本的なこと",score:{cat:2,bird:2}},{en:"Would enjoy",zh:"会喜欢",ja:"楽しそう",score:{dog:2,rabbit:2,bird:2}},{en:"Love it!",zh:"热爱！",ja:"大好き！",score:{dog:3,bird:2}}]},
+{en:"Desired lifespan?",zh:"期望寿命？",ja:"望ましい寿命？",
+opts:[{en:"Short (2-5y)",zh:"短期（2-5年）",ja:"短い（2-5年）",score:{hamster:3,fish:2}},{en:"Medium (5-10y)",zh:"中期（5-10年）",ja:"普通（5-10年）",score:{rabbit:3,bird:2}},{en:"Long (10-15y)",zh:"长期（10-15年）",ja:"長い（10-15年）",score:{cat:3,dog:3}},{en:"Very long (15+y)",zh:"超长期（15+年）",ja:"とても長い（15+年）",score:{dog:2,cat:2,bird:3}}]},
+{en:"Your ideal companion",zh:"理想伴侣类型？",ja:"理想の相棒は？",
+opts:[{en:"Loyal & devoted",zh:"忠诚专注",ja:"忠実で献身的",score:{dog:3}},{en:"Independent",zh:"独立自主",ja:"独立している",score:{cat:3}},{en:"Cute & small",zh:"可爱小巧",ja:"可愛で小さい",score:{hamster:3,rabbit:2}},{en:"Calm & soothing",zh:"平静舒适",ja:"穏やかで心地よい",score:{fish:3}}]}
+];
+
+const pets={
+dog:{emoji:"🐶",en:"Dog - Loyal Friend",zh:"狗狗 - 忠诚伙伴",ja:"犬 - 忠実な友達",
+en_desc:"Perfect for active, social people! Dogs need daily exercise, training & attention. They reward with unconditional love. 🐕💛",
+zh_desc:"最适合活跃社交的人！狗狗需要每天运动、训练和关注。它们回报无条件的爱。🐕💛",
+ja_desc:"アクティブで社交的な人に最適！毎日の運動、訓練、注意が必要です。無条件の愛で報いてくれます。🐕💛",
+en_traits:["Daily walks & exercise 🏃","Highly trainable 📚","Needs companionship 👥","Lifespan: 10-15y","Cost: Medium-High 💰"],
+zh_traits:["每天散步和运动 🏃","高度可训练 📚","需要陪伴 👥","寿命：10-15年","花费：中等至高"],
+ja_traits:["毎日の散歩と運動","高いトレーニング性","仲間が必要","寿命：10-15年","費用：中〜高"]},
+cat:{emoji:"🐱",en:"Cat - Independent Spirit",zh:"猫咪 - 独立精神",ja:"猫 - 独立した精神",
+en_desc:"Ideal for busy people! Low-maintenance, clean, affectionate on their own terms. Perfect for apartments. 🐈✨",
+zh_desc:"最适合忙碌的人！低维护、自洁、按自己节奏给予感情。完美公寓宠物。🐈✨",
+ja_desc:"忙しい人に最適！手入れが簡単、清潔で自分のペースで愛情を示します。",
+en_traits:["Low maintenance 😸","Self-cleaning 🧼","Quiet & calm 🤫","Lifespan: 12-18y","Cost: Low-Med 💰"],
+zh_traits:["低维护成本 😸","自己清洁 🧼","安静平静 🤫","寿命：12-18年","花费：低-中"],
+ja_traits:["メンテナンス簡単","自分で清潔","静かで穏やか","寿命：12-18年","費用：低〜中"]},
+hamster:{emoji:"🐹",en:"Hamster - Tiny Buddy",zh:"仓鼠 - 小小伙伴",ja:"ハムスター - 小さな友達",
+en_desc:"Perfect for beginners & small spaces! Adorable, low-cost, easy to care. Great for kids & students. 🐹💕",
+zh_desc:"最适合新手和小空间！可爱、低成本、易于照顾。非常适合孩子和学生。🐹💕",
+ja_desc:"初心者と小さなスペースに最適！可愛くて低コストで簡単。子供と学生に最適。",
+en_traits:["Very low cost 💰","Minimal space 📦","Nocturnal 🌙","Lifespan: 2-3y","Great for beginners 🌟"],
+zh_traits:["成本极低 💰","空间极小 📦","夜行性 🌙","寿命：2-3年","适合初学者"],
+ja_traits:["とても低コスト","最小限のスペース","夜行性","寿命：2-3年","初心者向け"]},
+rabbit:{emoji:"🐰",en:"Rabbit - Gentle Friend",zh:"兔子 - 温柔朋友",ja:"ウサギ - 優しい友達",
+en_desc:"Wonderful for patient, gentle people! Social, can be litter-trained, calmer than dogs. 🐇🌿",
+zh_desc:"最适合耐心温柔的人！善于社交、可训练、比狗更平静。🐇🌿",
+ja_desc:"忍耐強い優しい人に最適！社交的、トイレ訓練可能、犬より穏やか。",
+en_traits:["Needs hop space 🏃","Litter trainable 🚽","Social & gentle 💚","Lifespan: 8-12y","Cost: Low-Med 💰"],
+zh_traits:["需要跳跃空间 🏃","可训练 🚽","社交温柔 💚","寿命：8-12年","花费：低-中"],
+ja_traits:["跳ぶスペース必要","トイレ訓練可","社交的で優しい","寿命：8-12年","費用：低〜中"]},
+fish:{emoji:"🐠",en:"Fish - Tranquil Beauty",zh:"鱼儿 - 宁静之美",ja:"魚 - 静かな美しさ",
+en_desc:"Perfect for busy people & travelers! Low interaction, beautiful, creates calm. Allergy-friendly. 🐠🌊",
+zh_desc:"最适合忙碌和常旅行的人！少交互、美观、营造平静。无过敏。🐠🌊",
+ja_desc:"忙しい人と旅行者に最適！交流少、美しい、落ち着きます。アレルギーフリー。",
+en_traits:["No interaction needed 🚫","Very low maintenance 🎯","Silent & peaceful 🧘","Lifespan: Varies ⏳","Cost: Very Low 💰"],
+zh_traits:["无需互动 🚫","维护极低 🎯","安静祥和 🧘","寿命：差异 ⏳","花费：极低"],
+ja_traits:["交流なし","メンテナンス最小","静かで平和","寿命：様々","費用：極低"]},
+bird:{emoji:"🐦",en:"Bird - Cheerful Singer",zh:"鸟儿 - 欢快歌手",ja:"鳥 - 陽気な歌手",
+en_desc:"Ideal for social, musical people! Intelligent, learn tricks, fill home with songs. Interactive! 🦜🎵",
+zh_desc:"最适合社交爱乐的人！聪明、可学技能、美妙歌声。有互动！🦜🎵",
+ja_desc:"社交的で音楽的な人に最適！知的でトリック学習、歌で満たします。",
+en_traits:["Can learn songs 🎵","Social & interactive 👥","Needs enrichment 🧠","Lifespan: 5-50y","Cost: Medium 💰"],
+zh_traits:["可学歌唱 🎵","社交互动 👥","需要充实 🧠","寿命：5-50年","花费：中等"],
+ja_traits:["歌を学べる","社交的","充実が必要","寿命：5-50年","費用：中程度"]}
+};
+
+function setLang(lang){
+currentLang=lang;
+document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+event.target.classList.add('active');
+document.querySelectorAll('[data-lang]').forEach(el=>el.classList.toggle('active',el.dataset.lang===lang));
+}
+
+function showQuestion(n){
+const q=questions[n];
+const html=`<div class="question-card active">
+<h2><span data-lang="en" class="active">${q.en}</span><span data-lang="zh">${q.zh}</span><span data-lang="ja">${q.ja}</span></h2>
+<div class="options">${q.opts.map((o,i)=>`<button class="option" onclick="selectOption(${i})" data-i="${i}">
+<span data-lang="en" class="active">${o.en}</span><span data-lang="zh">${o.zh}</span><span data-lang="ja">${o.ja}</span>
+</button>`).join('')}</div>
+<button class="btn-next" disabled id="nextBtn" onclick="nextQuestion()">
+<span data-lang="en" class="active">Next →</span><span data-lang="zh">下一题 →</span><span data-lang="ja">次へ →</span>
+</button>
+</div>`;
+document.getElementById('quiz-container').innerHTML=html;
+document.getElementById('progress').textContent=`${n+1}/15`;
+document.getElementById('progress-fill').style.width=`${((n+1)/15)*100}%`;
+restoreLang();
+}
+
+function selectOption(i){
+const opts=document.querySelectorAll('.option');
+opts.forEach(o=>o.classList.remove('selected'));
+opts[i].classList.add('selected');
+document.getElementById('nextBtn').disabled=false;
+const score=questions[currentQ].opts[i].score;
+Object.keys(score).forEach(pet=>scores[pet]+=score[pet]);
+}
+
+function nextQuestion(){
+currentQ++;
+if(currentQ<15){showQuestion(currentQ);}else{showResult();}
+}
+
+function showResult(){
+let winner='dog';
+let max=0;
+Object.keys(scores).forEach(pet=>{if(scores[pet]>max){max=scores[pet];winner=pet;}});
+const p=pets[winner];
+const desc=currentLang==='en'?p.en_desc:currentLang==='zh'?p.zh_desc:p.ja_desc;
+const traits=currentLang==='en'?p.en_traits:currentLang==='zh'?p.zh_traits:p.ja_traits;
+const name=currentLang==='en'?p.en:currentLang==='zh'?p.zh:p.ja;
+const html=`<div class="result active">
+<div class="pet-emoji">${p.emoji}</div>
+<h2>${name}</h2>
+<p class="desc">${desc}</p>
+<div class="traits"><h3><span data-lang="en" class="active">Key Traits:</span><span data-lang="zh">主要特征：</span><span data-lang="ja">主な特徴：</span></h3>
+<ul>${traits.map(t=>`<li>🐾 ${t}</li>`).join('')}</ul></div>
+<a href="pet-personality.html" class="btn"><span data-lang="en" class="active">Learn Pet Personality →</span><span data-lang="zh">了解宠物性格 →</span><span data-lang="ja">ペット性格を知る →</span></a>
+<a href="index.html" class="btn" style="background:#fff;color:var(--text);border:2px solid var(--warm)"><span data-lang="en" class="active">Back Home</span><span data-lang="zh">返回首页</span><span data-lang="ja">ホームに戻る</span></a>
+</div>`;
+document.getElementById('quiz-container').innerHTML='';
+document.getElementById('result').innerHTML=html;
+document.getElementById('result').classList.add('active');
+restoreLang();
+}
+
+function restoreLang(){
+document.querySelectorAll('[data-lang]').forEach(el=>el.classList.toggle('active',el.dataset.lang===currentLang));
+}
+
+showQuestion(0);
+</script>
+</body>
+</html>
