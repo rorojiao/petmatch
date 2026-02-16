@@ -1,33 +1,28 @@
-# PetMatch 🐾 - Fun Pet Personality Tests
+# Pet Personality Matching
 
-Discover your perfect pet match, unlock your pet's MBTI personality, and find your spirit animal!
+> 🔗 **[Live Demo](https://rorojiao.github.io/petmatch/)** | Free, no ads, no signup required
 
-**Live Demo:** https://rorojiao.github.io/petmatch
+[![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen)](https://rorojiao.github.io/petmatch/)
 
-## Features 🎯
+## Features
+- 🆓 100% Free - No hidden costs
+- 🔒 Privacy First - All processing happens in your browser
+- 📱 Mobile Friendly - Works on any device
+- 🌐 Multi-language Support
+- ⚡ Fast Loading - No framework dependencies
 
-- **Which Pet Suits You?** 🏠 - 15 lifestyle questions to find your perfect pet companion (dog, cat, hamster, rabbit, fish, bird)
-- **Pet Personality Test** 🧠 - Discover your pet's MBTI personality type based on their behavior
-- **Spirit Animal Quiz** 🦊 - 15 personality questions to match your spirit animal
-
-## Supported Languages 🌍
-
-- English (EN)
-- 中文 (Chinese)
-- 日本語 (Japanese)
-
-## Technology 💻
-
-- Pure HTML/CSS/JavaScript (no dependencies)
-- Responsive design
-- Mobile-friendly
-- Beautiful warm yellow + white aesthetic
-
-## Support the Project 💛
-
-Enjoy PetMatch? Consider supporting us:
-- **ETH/USDT (ERC-20):** `0xEeD903787Cb86bcCc17777E5C7d10A4c2De43823`
+## Related Tools
+| Tool | Description |
+|------|-------------|
+| [🏠 ToolHub](https://rorojiao.github.io/tool-hub/) | All 20+ tools in one place |
+| [🔧 DevToolBox](https://rorojiao.github.io/devtoolbox/) | Developer Tools |
+| [💰 CalcSmart](https://rorojiao.github.io/calcsmart/) | Financial Calculators |
+| [🔮 MysticFate](https://rorojiao.github.io/mysticfate/) | Tarot & Zodiac |
+| [🧠 PsycheTest](https://rorojiao.github.io/psychetest/) | Personality Tests |
+| [❤️ LoveMatch](https://rorojiao.github.io/lovematch/) | Love Compatibility |
 
 ## License
+MIT
 
-Made with 💛 by PetMatch Team © 2026
+---
+Made with ❤️ | ⭐ Star this repo if you find it useful! | [View All Tools](https://rorojiao.github.io/tool-hub/)
